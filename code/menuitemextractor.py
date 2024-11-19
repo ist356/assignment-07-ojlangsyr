@@ -38,7 +38,6 @@ def extract_menu_item(title:str, scraped_text: str) -> MenuItem:
         description=item_description 
         )
 
-    pass # TODO  replace with code
 
 
 
