@@ -1,7 +1,7 @@
 import re
 from playwright.sync_api import Playwright, sync_playwright
-#from menuitemextractor import extract_menu_item
-#from menuitem import MenuItem
+from code.menuitemextractor import extract_menu_item
+from code.menuitem import MenuItem
 import pandas as pd
 
 def tullyscraper(playwright: Playwright) -> None:
@@ -22,16 +22,14 @@ def tullyscraper(playwright: Playwright) -> None:
             item_name = item.query_selector("p.foodmenu__menu-item__name").inner_text()
             item_price = item.query_selector("span.foodmenu__menu-item__price").inner_text()
             item_description = item.query_selector("p.foodmenu__menu-item__desc").inner_text()
-            menu_data.append({
-                "section": section_title,
-                "name": item_name, 
-                "price": item_price, 
-                "description": item_description})
+            scraped_text = f"{item_name}\n{item_price}\n{item_description}"
+            menu_item = extract_menu_item(section_title,scraped_text)
+            menu_data.append(menu_item)
     # ---------------------
     context.close()
     browser.close()
-    for item in menu_data:
-        print(item)
 
+    df=pd.DataFrame(menu_data)
+    df.to_csv("cache/tullys_menu.csv", index = False)
 with sync_playwright() as playwright:
     tullyscraper(playwright)
